@@ -18,60 +18,73 @@ JstructureDemo.post.fakeUnit = {
 
 var Jstructure = {};
 Jstructure.CSS_NAME_PREFIX = /^with_js_unit_/i;
+Jstructure.rootName = 'JstructureDemo';
 Jstructure.log = {};
 Jstructure.log.error = function(msg) { alert(msg) }
-Jstructure.initJavascriptUnits = function() {
-  var root = JstructureDemo;
-  var unitName2Array = function (name) {
-    return name.split(".");
+
+Jstructure.init = function(unitNames, context) {
+  var objectByName = function (nameAsArray) {
+    var currentObject = eval(nameAsArray[0]);
+    for(var i = 1; i < nameAsArray.length; i++) {
+      currentObject = currentObject[nameAsArray[i]];
+    }
+    return currentObject;
   }
 
-  var inferUnitNames = function (cssClasses) {
-    var result = [];
-    var cssClassArray = cssClasses.split(" ");
-    for(var i = 0; i < cssClassArray.length; i++) {
-      if(cssClassArray[i].match(Jstructure.CSS_NAME_PREFIX)) {
-          var nameWithDashes = cssClassArray[i].replace(Jstructure.CSS_NAME_PREFIX, '');
-          var name = nameWithDashes.replace(/-/g, ".");
-          result.push(name);
-      }
-    }
-    return result;
-  }
+  var getInitFunction = function(nameAsArray) {
+    var objectToInit = objectByName(nameAsArray);
 
-  var initUnits = function (unitNames) {
-    for(var i = 0; i < unitsNames.length; i++) {
-      initUnit(unitsNames[i]);
-    }
-  }
-
-  var getInitFunction = function(nameAsArray, node) {
-    var currentNode = node;
-    for(var i = 0; i < nameAsArray.length; i++) {
-      currentNode = currentNode[nameAsArray[i]];
-    }
-    if (typeof currentNode.init === "function") {
-      return currentNode.init;
+    if (typeof objectToInit.init === "function") {
+      return objectToInit.init;
     } else {
       Jstructure.log.error("'init' function isn't found.");
     } 
   }
 
-  var initUnit = function (unitName) {
-    var nameAsArray = unitName2Array(unitName);
-    var initFun = getInitFunction(nameAsArray, root);
-    initFun();
+  var initUnits = function (names) {
+    for(var i = 0; i < names.length; i++) {
+      initUnit(names[i]);
+    }
+  }
+
+  var initUnit = function (name) {
+    var nameAsArray = unitNameToArray(name);
+    getInitFunction(nameAsArray)(context);
+  }
+
+  var unitNameToArray = function (name) {
+    return name.split(".");
+  }
+
+  initUnits(unitNames);
+}
+
+Jstructure.initByBodyTagClasses = function () {
+  var inferUnitNames = function (cssClasses) {
+    var result = [];
+    var cssClassArray = cssClasses.split(" ");
+    for(var i = 0; i < cssClassArray.length; i++) {
+      if(cssClassArray[i].match(Jstructure.CSS_NAME_PREFIX)) {
+        var nameWithDashes = cssClassArray[i].replace(Jstructure.CSS_NAME_PREFIX, '');
+        var name = nameWithDashes.replace(/-/g, ".");
+        result.push(name);
+      }
+    }
+    return result;
+  }
+
+  var inferUnitNamesWithRoot = function (names) {
+    var result = [];
+    for(var i = 0; i < names.length; i++) {
+      result.push(Jstructure.rootName + '.' + names[i]);
+    }
+    return result;
   }
 
   var bodyClasses = $('body').attr('class')
-  var unitsNames = inferUnitNames(bodyClasses);
-  initUnits(unitsNames);
+  var unitNames = inferUnitNames(bodyClasses);
+  var unitNamesWithRoot = inferUnitNamesWithRoot(unitNames);
+  Jstructure.init(unitNamesWithRoot, $(document));
 }
 
-Jstructure.init = function() {
-  Jstructure.initJavascriptUnits();
-};
-
-$(function () { Jstructure.init(); });
-
-
+$(function () { Jstructure.initByBodyTagClasses(); });
