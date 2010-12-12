@@ -4,7 +4,7 @@ module ApplicationHelper
     @javascript_units ||= []
     @javascript_units = (@javascript_units + units_as_strings).uniq
 
-    response.headers['X-JavascriptUnitInit'] = @javascript_units.join(' ')
+    response.headers['X-JavascriptUnits'] = @javascript_units.join(' ') if request && request.xhr?
   end
 
   def javascript_units
@@ -17,7 +17,7 @@ module ApplicationHelper
   private
 
   def add_root_object_name(unit_name)
-    "JstructureDemo-#{unit_name}"
+    "JstructureDemo.#{unit_name}"
   end
 
   def add_prefix(unit_name)

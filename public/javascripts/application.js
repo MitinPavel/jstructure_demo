@@ -77,6 +77,13 @@ Jstructure.initByBodyTagClasses = function () {
   Jstructure.init(unitNames, $(document));
 }
 
+Jstructure.initByRequestHeader = function(event, xhr, options) {
+  var unitNames = (xhr.getResponseHeader("X-JavascriptUnits") || "").split(" ");
+  var context = $(options.context) || $(document);
+  Jstructure.init(unitNames, context);
+}
+
 $(function () { 
     Jstructure.initByBodyTagClasses(); 
+    $("body").ajaxComplete(Jstructure.initByRequestHeader);
 });
