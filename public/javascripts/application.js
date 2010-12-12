@@ -17,8 +17,7 @@ JstructureDemo.post.fakeUnit = {
 };
 
 var Jstructure = {};
-Jstructure.CSS_NAME_PREFIX = /^with_js_unit_/i;
-Jstructure.rootName = 'JstructureDemo';
+Jstructure.CSS_NAME_PREFIX = /^with_js_/i;
 Jstructure.log = {};
 Jstructure.log.error = function(msg) { alert(msg) }
 
@@ -73,18 +72,11 @@ Jstructure.initByBodyTagClasses = function () {
     return result;
   }
 
-  var inferUnitNamesWithRoot = function (names) {
-    var result = [];
-    for(var i = 0; i < names.length; i++) {
-      result.push(Jstructure.rootName + '.' + names[i]);
-    }
-    return result;
-  }
-
   var bodyClasses = $('body').attr('class')
   var unitNames = inferUnitNames(bodyClasses);
-  var unitNamesWithRoot = inferUnitNamesWithRoot(unitNames);
-  Jstructure.init(unitNamesWithRoot, $(document));
+  Jstructure.init(unitNames, $(document));
 }
 
-$(function () { Jstructure.initByBodyTagClasses(); });
+$(function () { 
+    Jstructure.initByBodyTagClasses(); 
+});

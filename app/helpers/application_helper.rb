@@ -1,6 +1,6 @@
 module ApplicationHelper
   def init_on_client(*units)
-    units_as_strings = units.map &:to_s
+    units_as_strings = units.map(&:to_s).map { |u| add_root_object_name u }
     @javascript_units ||= []
     @javascript_units = (@javascript_units + units_as_strings).uniq
 
@@ -16,8 +16,12 @@ module ApplicationHelper
 
   private
 
+  def add_root_object_name(unit_name)
+    "JstructureDemo-#{unit_name}"
+  end
+
   def add_prefix(unit_name)
-    "with_js_unit_#{unit_name}"
+    "with_js_#{unit_name}"
   end
 
   def replace_dots_with_dashes(class_name)
