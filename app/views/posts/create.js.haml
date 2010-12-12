@@ -1,0 +1,4 @@
+$('#new_post_area').html('#{escape_javascript(render('form', :post => @post))}');
+
+$('#posts').html('#{escape_javascript(render(:partial => 'post', :collection => @posts))}');
+
